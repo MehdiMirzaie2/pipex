@@ -6,16 +6,10 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 10:11:10 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/05 16:36:22 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/05 17:48:15 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/wait.h>
 #include "pipex.h"
 
 void	middle_child(const t_args args, int pipes[][2], int i)
@@ -44,6 +38,8 @@ void	child(const t_args args, int pipes[][2])
 
 	close(pipes[args.process_num][0]);
 	file = open(args.av[1], O_RDONLY);
+	if (file == -1)
+		exit(127);
 	dup2(file, STDIN_FILENO);
 	dup2(pipes[0][1], STDOUT_FILENO);
 	close(pipes[0][1]);
@@ -57,7 +53,9 @@ void	parent(const t_args args, int pipes[][2])
 	int	i;
 
 	close(pipes[0][1]);
-	file = open(args.av[args.ac - 1], O_WRONLY);
+	file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	if (file == -1)
+		exit(127);
 	dup2(file, STDOUT_FILENO);
 	dup2(pipes[args.process_num][0], STDIN_FILENO);
 	close(file);
@@ -99,6 +97,34 @@ int	main(int ac, char **av, char **env)
 	const t_args	args = {av, ac, process_num, env};
 
 	i = 0;
+
+	if (ac < 3)
+		return (127);
+	if (ac == 4)
+	{
+		int fd[2];
+		pipe(fd);
+		if (fork() == 0){
+			close(fd[0]);
+			int file = open(av[1], O_RDONLY);
+			if (file == -1)
+				exit(127);
+			dup2(file, STDIN_FILENO);
+			dup2(fd[1], STDOUT_FILENO);
+			close(fd[1]);
+			close(file);
+			pipex(av[2], env);
+		}
+		close(fd[1]);
+		dup2(fd[0], STDIN_FILENO);
+		int file = open(av[3], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+		if (file == -1)
+			exit(127);
+		dup2(file, STDOUT_FILENO);
+		close(file);
+		close(fd[0]);
+		pipex(av[3], env);
+	}
 	while (i < process_num + 1)
 	{
 		if (pipe(pipes[i++]) == -1)

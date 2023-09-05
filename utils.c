@@ -6,7 +6,7 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:11:44 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/05 16:36:29 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/05 19:59:20 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,22 @@ void	pipex(char *cmd, char **env)
 	char	*command_path;
 	char	**splitted_paths;
 	char	**cmd_splitted;
+	int		pos;
 
 	paths = get_paths(env);
 	splitted_paths = ft_split(paths, ':');
 	cmd_splitted = ft_split(cmd, ' ');
-	command_path = cmd_path(splitted_paths, cmd_splitted[0]);
+	pos = ft_strrchrpos(cmd_splitted[0], '/');
+	if (pos != 0)
+	{
+		command_path = cmd_splitted[0];
+		cmd_splitted[0] = ft_substr(cmd_splitted[0], pos, ft_strlen(cmd_splitted[0]));
+	}
+	else
+		command_path = cmd_path(splitted_paths, cmd_splitted[0]);
+	if (cmd_splitted[1] != NULL)
+		if (cmd_splitted[1][0] == '\'')
+			cmd_splitted[1] = ft_substr(cmd_splitted[1], 1, ft_strlen(cmd_splitted[1] - 1));
 	if (execve(command_path, cmd_splitted, env) == -1)
 		exit(EXIT_FAILURE);
 }
@@ -90,7 +101,8 @@ char	*cmd_path(char **splitted_paths, char *cmd)
 		free(file_path);
 		++splitted_paths;
 	}
-	perror("access error");
+	ft_putstr_fd(cmd, 2);
+	perror("command not found");
 	exit(127);
 }
 
