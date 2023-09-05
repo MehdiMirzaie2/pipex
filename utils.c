@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmirzaie <mmirzaie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:11:44 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/05/30 14:44:44 by mmirzaie         ###   ########.fr       */
+/*   Updated: 2023/09/04 11:27:12 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	found_error(char *str, int error)
+{
+	(void)error;
+	perror(str);
+	exit(EXIT_FAILURE);
+}
 
 char	*get_paths(char **env)
 {
