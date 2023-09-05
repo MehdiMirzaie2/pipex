@@ -6,11 +6,26 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:11:44 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/04 11:27:12 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/05 16:36:29 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	pipex(char *cmd, char **env)
+{
+	char	*paths;
+	char	*command_path;
+	char	**splitted_paths;
+	char	**cmd_splitted;
+
+	paths = get_paths(env);
+	splitted_paths = ft_split(paths, ':');
+	cmd_splitted = ft_split(cmd, ' ');
+	command_path = cmd_path(splitted_paths, cmd_splitted[0]);
+	if (execve(command_path, cmd_splitted, env) == -1)
+		exit(EXIT_FAILURE);
+}
 
 void	found_error(char *str, int error)
 {

@@ -6,7 +6,7 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:57:21 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/05 10:59:20 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/05 16:36:44 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,14 @@
 #define READ 0
 #define WRITE 1
 
-typedef struct s_cmds{
-	char			*cmd;
-	struct s_cmd	*next;
-} t_cmds;
+typedef struct s_args{
+	char	**av;
+	int		ac;
+	int		process_num;
+	char	**env;
+} t_args;
 
+void	pipex(char *cmd, char **env);
 void	found_error(char *str, int error);
 char	*get_paths(char **env);
 char	*ft_strcat(char *path, char *cmd);
