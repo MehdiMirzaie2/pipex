@@ -1,4 +1,4 @@
-SRCS			= main.c utils.c
+SRCS			= main.c utils.c get_next_line_utils.c get_next_line.c
 OBJS			= $(SRCS:.c=.o)
 
 CC				= gcc

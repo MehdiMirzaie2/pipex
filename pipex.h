@@ -6,7 +6,7 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:57:21 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/05 16:51:49 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/07 12:13:23 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,15 @@
 # include <stdlib.h>
 # include <string.h>
 # include "libft.h"
+# include <stdbool.h>
 
 typedef struct s_args{
 	char	**av;
 	int		ac;
 	int		process_num;
 	char	**env;
+	int		*pids;
+	bool	temp_file_created;
 }	t_args;
 
 void	pipex(char *cmd, char **env);

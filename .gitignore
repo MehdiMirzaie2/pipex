@@ -4,4 +4,6 @@ pipex
 *.swp
 *.swo
 *.a
+infile
+outfile
 pipex-tester

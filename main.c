@@ -6,7 +6,7 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 10:11:10 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/05 17:48:15 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/07 12:43:00 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ void	child(const t_args args, int pipes[][2])
 	dup2(pipes[0][1], STDOUT_FILENO);
 	close(pipes[0][1]);
 	close(file);
+	if (args.temp_file_created == true)
+		if (unlink(args.av[1]) == -1) // Remove the temporary file
+			perror("unlink");
 	pipex(args.av[2], args.env);
 }
 
@@ -53,9 +56,15 @@ void	parent(const t_args args, int pipes[][2])
 	int	i;
 
 	close(pipes[0][1]);
-	file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	if (args.temp_file_created == true)
+		file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
+	else
+		file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (file == -1)
+	{
+		printf("yours gay!\n");
 		exit(127);
+	}
 	dup2(file, STDOUT_FILENO);
 	dup2(pipes[args.process_num][0], STDIN_FILENO);
 	close(file);
@@ -87,19 +96,91 @@ void	master(const t_args args, int pipes[][2])
 }
 
 #define MAX_PROCESS_NUM 100
+#include "get_next_line.h"
+
+int open_pipes(t_args args, int pipes[][2])
+{
+	int	i;
+
+	i = 0;
+	while (i < args.process_num + 1)
+	{
+		if (pipe(pipes[i++]) == -1)
+		{
+			printf("Error with creating pipe\n");
+			return (1);
+		}
+	}
+	return (0);
+}
+
+int	create_middle_process(t_args args, int pipes[][2])
+{
+	int	i;
+
+	i = 0;
+	while (i < args.process_num)
+	{
+		args.pids[i] = fork();
+		if (args.pids[i] == -1)
+		{
+			printf("Error with creating process\n");
+			return (2);
+		}
+		if (args.pids[i] == 0)
+			middle_child(args, pipes, i);
+		i++;
+	}
+	return (0);
+}
 
 int	main(int ac, char **av, char **env)
 {
-	const int		process_num = ac - 5;
+	int		process_num = ac - 5;
 	int				pids[MAX_PROCESS_NUM];
 	int				pipes[MAX_PROCESS_NUM][2];
-	int				i;
-	const t_args	args = {av, ac, process_num, env};
-
-	i = 0;
+	t_args	args = {av, ac, process_num, env, pids, false};
 
 	if (ac < 3)
 		return (127);
+
+	if (ft_strncmp(av[1], "here_doc", 8) == 0)
+	{
+		char* template = "/tmp/mytempfileXXXXXX";
+		int fd;
+		
+		// Create a unique file name
+		char *filename = strdup(template);
+
+		fd = open(filename, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
+		if (fd == -1)
+			exit(127);
+		args.temp_file_created = true;
+		int	limiter_len = ft_strlen(av[2]);
+		char *lines;
+		lines = get_next_line(STDIN_FILENO);
+		while (ft_strncmp(lines, av[2], limiter_len) != 0)
+		{
+			ft_putstr_fd(lines, fd);
+			free(lines);
+			lines = get_next_line(STDIN_FILENO);
+		}
+		av[1] = filename;
+		av[2] = av[3];
+		av[3] = av[4];
+		av[4] = av[5];
+		args.ac = 5;
+		args.process_num = ac - 5;
+		if (open_pipes(args, pipes) == 1)
+			return (1);
+		if (create_middle_process(args, pipes) == 2)
+			return (2);
+		master(args, pipes);
+		// close(fd);
+		// free(filename);
+	}
+
+		
 	if (ac == 4)
 	{
 		int fd[2];
@@ -125,27 +206,11 @@ int	main(int ac, char **av, char **env)
 		close(fd[0]);
 		pipex(av[3], env);
 	}
-	while (i < process_num + 1)
-	{
-		if (pipe(pipes[i++]) == -1)
-		{
-			printf("Error with creating pipe\n");
-			return (1);
-		}
-	}
-	i = 0;
-	while (i < process_num)
-	{
-		pids[i] = fork();
-		if (pids[i] == -1)
-		{
-			printf("Error with creating process\n");
-			return (2);
-		}
-		if (pids[i] == 0)
-			middle_child(args, pipes, i);
-		i++;
-	}
+	
+	if (open_pipes(args, pipes) == 1)
+		return (1);
+	if (create_middle_process(args, pipes) == 2)
+		return (2);
 	master(args, pipes);
 	return (0);
 }
