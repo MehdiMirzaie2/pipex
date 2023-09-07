@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   next_line.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmirzaie <mmirzaie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 10:04:48 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/04/04 11:30:07 by mmirzaie         ###   ########.fr       */
+/*   Updated: 2023/09/07 12:54:27 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "next_line.h"
 
 static char	*ft_next(char **temp)
 {

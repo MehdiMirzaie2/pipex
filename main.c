@@ -6,7 +6,7 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 10:11:10 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/07 12:43:00 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/07 19:10:08 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,7 @@ void	parent(const t_args args, int pipes[][2])
 	else
 		file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (file == -1)
-	{
-		printf("yours gay!\n");
 		exit(127);
-	}
 	dup2(file, STDOUT_FILENO);
 	dup2(pipes[args.process_num][0], STDIN_FILENO);
 	close(file);
@@ -96,7 +93,7 @@ void	master(const t_args args, int pipes[][2])
 }
 
 #define MAX_PROCESS_NUM 100
-#include "get_next_line.h"
+#include "next_line.h"
 
 int open_pipes(t_args args, int pipes[][2])
 {
@@ -137,19 +134,19 @@ int	create_middle_process(t_args args, int pipes[][2])
 int	main(int ac, char **av, char **env)
 {
 	int		process_num = ac - 5;
-	int				pids[MAX_PROCESS_NUM];
-	int				pipes[MAX_PROCESS_NUM][2];
+	int		pids[MAX_PROCESS_NUM];
+	int		pipes[MAX_PROCESS_NUM][2];
 	t_args	args = {av, ac, process_num, env, pids, false};
 
+	if (*env == NULL)
+		return (0);
 	if (ac < 3)
 		return (127);
-
+	
 	if (ft_strncmp(av[1], "here_doc", 8) == 0)
 	{
 		char* template = "/tmp/mytempfileXXXXXX";
 		int fd;
-		
-		// Create a unique file name
 		char *filename = strdup(template);
 
 		fd = open(filename, O_CREAT | O_RDWR | O_EXCL, S_IRUSR | S_IWUSR);
@@ -176,11 +173,7 @@ int	main(int ac, char **av, char **env)
 		if (create_middle_process(args, pipes) == 2)
 			return (2);
 		master(args, pipes);
-		// close(fd);
-		// free(filename);
 	}
-
-		
 	if (ac == 4)
 	{
 		int fd[2];
@@ -206,7 +199,6 @@ int	main(int ac, char **av, char **env)
 		close(fd[0]);
 		pipex(av[3], env);
 	}
-	
 	if (open_pipes(args, pipes) == 1)
 		return (1);
 	if (create_middle_process(args, pipes) == 2)

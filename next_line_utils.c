@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   next_line_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmirzaie <mmirzaie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/04 10:22:41 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/04/04 11:15:36 by mmirzaie         ###   ########.fr       */
+/*   Updated: 2023/09/07 12:54:31 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "next_line.h"
 
 // unsigned long is used to ensure that the value of the pointer can be stored
 

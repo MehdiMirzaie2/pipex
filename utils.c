@@ -6,7 +6,7 @@
 /*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:11:44 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/07 11:07:27 by mehdimirzai      ###   ########.fr       */
+/*   Updated: 2023/09/07 14:51:30 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,16 @@ void	pipex(char *cmd, char **env)
 
 	paths = get_paths(env);
 	splitted_paths = ft_split(paths, ':');
-	cmd_splitted = ft_split(cmd, ' ');
+	// cmd_splitted = ft_split(cmd, ' ');
+	cmd_splitted = ft_split(cmd, '\'');
+	if (cmd_splitted[1] == NULL)
+		cmd_splitted = ft_split(cmd, ' ');
+	else
+	{
+		char *temp = cmd_splitted[0];
+		cmd_splitted[0] = ft_substr(temp, 0, ft_strlen(temp) - 1);
+		free(temp);
+	}
 	pos = ft_strrchrpos(cmd_splitted[0], '/');
 	if (pos != 0)
 	{
