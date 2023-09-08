@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmirzaie <mmirzaie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 10:11:10 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/08 12:17:02 by mmirzaie         ###   ########.fr       */
+/*   Updated: 2023/09/08 12:43:55 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	middle_child(const t_args args, int pipes[][2], int i)
 	int	j;
 
 	j = 0;
-	while (j < args.process_num + 1)
+	while (j < *(args.process_num) + 1)
 	{
 		if (i != j)
 			close(pipes[j][0]);
@@ -36,7 +36,7 @@ void	child(const t_args args, int pipes[][2])
 {
 	int	file;
 
-	close(pipes[args.process_num][0]);
+	close(pipes[*(args.process_num)][0]);
 	file = open(args.av[1], O_RDONLY);
 	if (file == -1)
 		exit(127);
@@ -56,18 +56,18 @@ void	parent(const t_args args, int pipes[][2])
 
 	close(pipes[0][1]);
 	if (args.temp_file_created == true)
-		file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
+		file = open(args.av[*(args.ac) - 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
 	else
-		file = open(args.av[args.ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+		file = open(args.av[*(args.ac) - 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (file == -1)
 		exit(127);
 	if ((redirect_input(file, STDOUT_FILENO) == -1)
-		|| redirect_output(pipes[args.process_num][0], STDIN_FILENO) == -1)
+		|| redirect_output(pipes[*(args.process_num)][0], STDIN_FILENO) == -1)
 		exit(EXIT_FAILURE);
 	i = 0;
-	while (i++ < args.process_num)
+	while (i++ < *(args.process_num))
 		wait(NULL);
-	pipex(args.av[args.ac - 2], args.env);
+	pipex(args.av[*(args.ac) - 2], args.env);
 }
 
 void	master(const t_args args, int pipes[][2])
@@ -75,9 +75,9 @@ void	master(const t_args args, int pipes[][2])
 	int	j;
 
 	j = 0;
-	while (j < args.process_num + 1)
+	while (j < *(args.process_num) + 1)
 	{
-		if (j != args.process_num)
+		if (j != *(args.process_num))
 			close(pipes[j][0]);
 		if (j != 0)
 			close(pipes[j][1]);
@@ -93,7 +93,7 @@ int	open_pipes(t_args args, int pipes[][2])
 	int	i;
 
 	i = 0;
-	while (i < args.process_num + 1)
+	while (i < *(args.process_num) + 1)
 	{
 		if (pipe(pipes[i++]) == -1)
 		{
@@ -109,7 +109,7 @@ int	create_middle_process(t_args args, int pipes[][2])
 	int	i;
 
 	i = 0;
-	while (i < args.process_num)
+	while (i < *(args.process_num))
 	{
 		args.pids[i] = fork();
 		if (args.pids[i] == -1)
@@ -130,18 +130,13 @@ void	new_av(t_args args, char *filename)
 
 	i = 2;
 	args.av[1] = filename;
-	printf("\n%s\n", args.av[1]);
-	while (i < (args.ac - 1))
+	while (i < (*(args.ac) - 1))
 	{
 		args.av[i] = args.av[i + 1];
-		printf("%s\n", args.av[i]);
 		i++;
 	}
-	printf("\n");
-	args.ac = i;
-	printf("%d\n", args.ac);
-	args.process_num = args.ac - 5;
-	printf("%d\n", args.process_num);
+	*args.ac = i;
+	*args.process_num = *(args.ac) - 5;
 }
 
 int	heredoc(t_args args, int pipes[][2])
@@ -170,8 +165,8 @@ int	heredoc(t_args args, int pipes[][2])
 	// args.av[2] = args.av[3];
 	// args.av[3] = args.av[4];
 	// args.av[4] = args.av[5];
-	// args.ac = 5;
-	// args.process_num = args.ac - 5;
+	// *(args.ac) = 5;
+	// *(args.process_num) = *(args.ac) - 5;
 	if (open_pipes(args, pipes) == 1 || create_middle_process(args, pipes) == 2)
 		return (1);
 	master(args, pipes);
@@ -184,8 +179,8 @@ int	main(int ac, char **av, char **env)
 	int		pipes[MAX_PROCESS_NUM][2];
 	t_args	args;
 
-	args = (t_args){.av = av, .ac = ac,
-		.process_num = ac - 5,
+	args = (t_args){.av = av, .ac = &ac,
+		.process_num = &ac - 5,
 		.env = env, .pids = pids, .temp_file_created = false};
 	if (*env == NULL)
 		return (0);

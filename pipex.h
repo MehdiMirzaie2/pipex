@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmirzaie <mmirzaie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mehdimirzaie <mehdimirzaie@student.42.f    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/30 12:57:21 by mmirzaie          #+#    #+#             */
-/*   Updated: 2023/09/08 11:09:19 by mmirzaie         ###   ########.fr       */
+/*   Updated: 2023/09/08 12:33:37 by mehdimirzai      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@
 
 typedef struct s_args{
 	char	**av;
-	int		ac;
-	int		process_num;
+	int		*ac;
+	int		*process_num;
 	char	**env;
 	int		*pids;
 	bool	temp_file_created;
