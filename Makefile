@@ -1,4 +1,4 @@
-SRCS			= main.c utils.c
+SRCS			= main.c utils.c redirect.c
 BONUS_SRCS		= next_line_utils.c next_line.c
 
 OBJS			= $(SRCS:.c=.o)
